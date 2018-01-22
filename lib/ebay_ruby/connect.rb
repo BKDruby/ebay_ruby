@@ -3,11 +3,12 @@ autoload :EbayFindItem, "ebay_ruby/ebay_find_item"
 
 class EbayConnect
 
-  def initialize(app_id)
-    @app_id = app_id
+  def initialize(app_id:, campaign_id:)
+    @app_id      = app_id
+    @campaign_id = campaign_id
   end
 
-  attr_reader :app_id, :build_uri
+  attr_reader :app_id, :build_uri, :campaign_id
 
   def get_connect(url)
     response = Net::HTTP.get_response url
@@ -38,10 +39,12 @@ class EbayConnect
     ebay_items.all_items
   end
 
-
   private
   def build_uri(operation_name, search_keyword, per_page)
-    uri_string = "http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=#{operation_name}&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=#{app_id}&GLOBAL-ID=EBAY-US&RESPONSE-DATA-FORMAT=JSON&#{search_keyword}&paginationInput.entriesPerPage=#{per_page.to_i}"
+    uri_string = "http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=#{operation_name}" \
+                 "&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=#{app_id}&GLOBAL-ID=EBAY-US&RESPONSE-DATA-FORMAT=JSON" \
+                 "&#{search_keyword}&paginationInput.entriesPerPage=#{per_page.to_i}" \
+                 "&affiliate.trackingId=#{campaign_id}&affiliate.networkId=9"
     URI(uri_string)
   end
- end
+end
